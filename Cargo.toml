@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "sbus",
+    "sbus-test",
+]
+resolver = "2"
