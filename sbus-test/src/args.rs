@@ -8,7 +8,7 @@ pub struct Cli {
     /// Hostname or ip address
     pub host: String,
 
-    /// TCP port number
+    /// UDP port number
     #[arg(default_value = "5050")]
     pub port: u16,
 
