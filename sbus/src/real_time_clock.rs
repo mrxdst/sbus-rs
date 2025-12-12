@@ -26,7 +26,7 @@ impl Encodable for RealTimeClock {
         write(self.hour)?;
         write(self.minute)?;
         write(self.second)?;
-        return Ok(());
+        Ok(())
     }
 }
 
@@ -38,7 +38,7 @@ impl Decodable<Self> for RealTimeClock {
                 .map_err(|_| DecodeError::InvalidData("Invalid time data".into()))?;
             Ok(v)
         };
-        return Ok(Self {
+        Ok(Self {
             week: read()?,
             week_day: read()?,
             year: read()?,
@@ -47,6 +47,6 @@ impl Decodable<Self> for RealTimeClock {
             hour: read()?,
             minute: read()?,
             second: read()?,
-        });
+        })
     }
 }

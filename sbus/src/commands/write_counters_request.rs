@@ -16,7 +16,7 @@ impl<'a> Encodable for WriteCountersRequest<'a> {
         for value in self.values.iter() {
             encoder.write_i32(*value);
         }
-        return Ok(());
+        Ok(())
     }
 }
 
@@ -35,9 +35,9 @@ impl<'a> Decodable<Self> for WriteCountersRequest<'a> {
         for _ in 0..length {
             values.push(decoder.read_i32()?);
         }
-        return Ok(Self {
+        Ok(Self {
             address,
             values: values.into(),
-        });
+        })
     }
 }

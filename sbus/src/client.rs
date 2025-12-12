@@ -342,7 +342,7 @@ impl SBusUDPClient {
         };
 
         if res_msg.telegram_attribute != response_type {
-            return Err(SBusError::InvalidResponse(format!("Telegram attribute mismatch")));
+            return Err(SBusError::InvalidResponse("Telegram attribute mismatch".to_string()));
         }
 
         Ok(res_msg.body)
@@ -388,6 +388,6 @@ fn validate_input(address: u16, length: usize, max_length: u16) -> Result<(), SB
             "Length exceeds maximum allowed length {max_length}"
         )));
     }
-    u16::checked_add(address, (length - 1) as u16).ok_or(SBusError::ArgumentsOutOfRange(format!("Address + length exceeds device address space")))?;
+    u16::checked_add(address, (length - 1) as u16).ok_or(SBusError::ArgumentsOutOfRange("Address + length exceeds device address space".to_string()))?;
     Ok(())
 }

@@ -7,7 +7,6 @@ mod encoding;
 mod message;
 mod real_time_clock;
 mod request;
-mod response;
 mod utils;
 
 pub use client::{SBusError, SBusUDPClient};

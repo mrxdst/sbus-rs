@@ -14,16 +14,16 @@ impl<'a> Encodable for Request<'a> {
         encoder.write_u8(self.station);
         encoder.write_u8(self.command_id.into());
         encoder.write_bytes(&self.body);
-        return Ok(());
+        Ok(())
     }
 }
 
 impl<'a> Decodable<Self> for Request<'a> {
     fn decode(decoder: &mut Decoder) -> DecodeResult<Self> {
-        return Ok(Self {
+        Ok(Self {
             station: decoder.read_u8()?,
             command_id: decoder.read_u8()?.into(),
             body: decoder.read_bytes(decoder.remaining())?.into(),
-        });
+        })
     }
 }

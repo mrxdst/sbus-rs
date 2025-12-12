@@ -17,7 +17,7 @@ pub enum Acknowledge {
 impl Encodable for Acknowledge {
     fn encode(&self, encoder: &mut Encoder) -> EncodeResult {
         encoder.write_u16((*self).into());
-        return Ok(());
+        Ok(())
     }
 }
 

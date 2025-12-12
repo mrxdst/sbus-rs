@@ -10,12 +10,12 @@ pub struct WriteOutputsRequest<'a> {
 
 impl<'a> Encodable for WriteOutputsRequest<'a> {
     fn encode(&self, encoder: &mut Encoder) -> EncodeResult {
-        let byte_length: u8 = ((self.values.len() + 7) / 8).try_into()?;
-        encoder.write_u8(byte_length.checked_add(2).ok_or_else(|| EncodeError::Overflow)?);
+        let byte_length: u8 = self.values.len().div_ceil(8).try_into()?;
+        encoder.write_u8(byte_length.checked_add(2).ok_or(EncodeError::Overflow)?);
         encoder.write_u16(self.address);
-        encoder.write_u8(self.values.len().checked_sub(1).ok_or_else(|| EncodeError::Overflow)?.try_into()?);
+        encoder.write_u8(self.values.len().checked_sub(1).ok_or(EncodeError::Overflow)?.try_into()?);
         encoder.write_bools(&self.values);
-        return Ok(());
+        Ok(())
     }
 }
 
@@ -33,9 +33,9 @@ impl<'a> Decodable<Self> for WriteOutputsRequest<'a> {
         let mut values = decoder.read_bools(byte_length as usize)?;
         values.truncate(length as usize);
 
-        return Ok(Self {
+        Ok(Self {
             address,
             values: values.into(),
-        });
+        })
     }
 }

@@ -13,7 +13,7 @@ impl<'a> Encodable for ReadTimersResponse<'a> {
         for value in self.values.iter() {
             encoder.write_i32(*value);
         }
-        return Ok(());
+        Ok(())
     }
 }
 
@@ -23,6 +23,6 @@ impl<'a> Decodable<Self> for ReadTimersResponse<'a> {
         while decoder.remaining() > 0 {
             values.push(decoder.read_i32()?);
         }
-        return Ok(Self { values: values.into() });
+        Ok(Self { values: values.into() })
     }
 }

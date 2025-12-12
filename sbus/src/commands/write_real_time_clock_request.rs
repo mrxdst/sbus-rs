@@ -8,14 +8,14 @@ pub struct WriteRealTimeClockRequest {
 impl Encodable for WriteRealTimeClockRequest {
     fn encode(&self, encoder: &mut Encoder) -> EncodeResult {
         encoder.write_type(&self.rtc)?;
-        return Ok(());
+        Ok(())
     }
 }
 
 impl Decodable<Self> for WriteRealTimeClockRequest {
     fn decode(decoder: &mut Decoder) -> DecodeResult<Self> {
-        return Ok(Self {
+        Ok(Self {
             rtc: decoder.read_type::<RealTimeClock>()?,
-        });
+        })
     }
 }

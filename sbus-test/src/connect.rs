@@ -294,8 +294,8 @@ impl ClientImpl {
                     match args.datatype {
                         WriteDatatype::Integer => values.push(value.parse::<i32>()?),
                         WriteDatatype::Float => values.push(ieee_to_sbus_float(value.parse::<f64>()?)),
-                        WriteDatatype::Hex => values.push(i32::from_str_radix(&value, 16)?),
-                        WriteDatatype::Bin => values.push(i32::from_str_radix(&value, 2)?),
+                        WriteDatatype::Hex => values.push(i32::from_str_radix(value, 16)?),
+                        WriteDatatype::Bin => values.push(i32::from_str_radix(value, 2)?),
                     }
                 }
 
@@ -321,7 +321,7 @@ impl ClientImpl {
         Ok(())
     }
 
-    fn print_flags(&mut self, address: u16, values: &Vec<bool>) {
+    fn print_flags(&mut self, address: u16, values: &[bool]) {
         let mut table = Table::new();
         table.load_preset(presets::NOTHING);
         table.set_header(["Address", "Value"]);
@@ -338,7 +338,7 @@ impl ClientImpl {
         self.last_table = Some(table);
     }
 
-    fn print_registers(&mut self, address: u16, values: &Vec<i32>, show_float: bool) {
+    fn print_registers(&mut self, address: u16, values: &[i32], show_float: bool) {
         let mut table = Table::new();
         table.load_preset(presets::NOTHING);
 

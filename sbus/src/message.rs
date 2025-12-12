@@ -35,7 +35,7 @@ impl Encodable for Message {
         encoder.write_bytes(&bytes);
         encoder.write_u16(crc16(&bytes));
 
-        return Ok(());
+        Ok(())
     }
 }
 
@@ -65,10 +65,10 @@ impl Decodable<Self> for Message {
         let telegram_attribute = post_decoder.read_u8()?.into();
         let body = post_decoder.read_bytes(post_decoder.remaining())?;
 
-        return Ok(Self {
+        Ok(Self {
             sequence_number,
             telegram_attribute,
             body,
-        });
+        })
     }
 }

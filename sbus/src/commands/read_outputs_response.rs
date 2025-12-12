@@ -10,14 +10,14 @@ pub struct ReadOutputsResponse<'a> {
 impl<'a> Encodable for ReadOutputsResponse<'a> {
     fn encode(&self, encoder: &mut Encoder) -> EncodeResult {
         encoder.write_bools(&self.values);
-        return Ok(());
+        Ok(())
     }
 }
 
 impl<'a> Decodable<Self> for ReadOutputsResponse<'a> {
     fn decode(decoder: &mut Decoder) -> DecodeResult<Self> {
-        return Ok(Self {
+        Ok(Self {
             values: decoder.read_bools(decoder.remaining() * 8)?.into(),
-        });
+        })
     }
 }

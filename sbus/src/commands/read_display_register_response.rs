@@ -8,14 +8,14 @@ pub struct ReadDisplayRegisterResponse {
 impl Encodable for ReadDisplayRegisterResponse {
     fn encode(&self, encoder: &mut Encoder) -> EncodeResult {
         encoder.write_u32(self.register);
-        return Ok(());
+        Ok(())
     }
 }
 
 impl Decodable<Self> for ReadDisplayRegisterResponse {
     fn decode(decoder: &mut Decoder) -> DecodeResult<Self> {
-        return Ok(Self {
+        Ok(Self {
             register: decoder.read_u32()?,
-        });
+        })
     }
 }

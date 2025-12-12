@@ -10,14 +10,14 @@ pub struct ReadFirmwareVersionResponse<'a> {
 impl<'a> Encodable for ReadFirmwareVersionResponse<'a> {
     fn encode(&self, encoder: &mut Encoder) -> EncodeResult {
         encoder.write_string(&self.version);
-        return Ok(());
+        Ok(())
     }
 }
 
 impl<'a> Decodable<Self> for ReadFirmwareVersionResponse<'a> {
     fn decode(decoder: &mut Decoder) -> DecodeResult<Self> {
-        return Ok(Self {
+        Ok(Self {
             version: decoder.read_string()?.into(),
-        });
+        })
     }
 }

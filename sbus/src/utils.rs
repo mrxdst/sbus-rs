@@ -2,16 +2,16 @@ pub fn crc16(data: &[u8]) -> u16 {
     let mut crc: u32 = 0;
 
     for byte in data {
-        crc = crc ^ ((*byte as u32) << 8);
+        crc ^= (*byte as u32) << 8;
         for _ in 0..8 {
-            crc = crc << 1;
+            crc <<= 1;
             if crc & 0x10000 != 0 {
                 crc = (crc ^ 0x1021) & 0xFFFF;
             }
         }
     }
 
-    return crc as u16;
+    crc as u16
 }
 
 /// Converts a 32-bit S-Bus float into [f64].
@@ -26,7 +26,7 @@ pub fn sbus_float_to_ieee(value: i32) -> f64 {
     let e: f64 = ((value & 0x7F) as i8 - 64) as f64;
     let m: f64 = (value >> 8) as f64 / 16777216.0;
 
-    return s * f64::powf(2.0, e) * m;
+    s * f64::powf(2.0, e) * m
 }
 
 /// Converts [f64] into a 32-bit S-Bus float.
@@ -51,7 +51,7 @@ pub fn ieee_to_sbus_float(value: f64) -> i32 {
     let e: u32 = f64::clamp(e + 64.0, 0.0, 127.0) as u32;
     let m: u32 = ((m * 16777216.0) as u32) << 8;
 
-    return i32::from_ne_bytes((s | e | m).to_ne_bytes());
+    i32::from_ne_bytes((s | e | m).to_ne_bytes())
 }
 
 #[cfg(test)]
