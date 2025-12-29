@@ -20,7 +20,7 @@ impl Decodable<Self> for ReadRegistersRequest {
             length: decoder
                 .read_u8()?
                 .checked_add(1)
-                .ok_or_else(|| DecodeError::InvalidData("Invalid length".into()))?,
+                .ok_or(DecodeError::InvalidData("Invalid length"))?,
             address: decoder.read_u16()?,
         })
     }

@@ -25,9 +25,9 @@ impl<'a> Decodable<Self> for WriteCountersRequest<'a> {
         let length = decoder
             .read_u8()?
             .checked_sub(1)
-            .ok_or_else(|| DecodeError::InvalidData("Invalid length".into()))?;
+            .ok_or(DecodeError::InvalidData("Invalid length"))?;
         if length % 4 != 0 {
-            return Err(DecodeError::InvalidData("Invalid length".into()));
+            return Err(DecodeError::InvalidData("Invalid length"));
         }
         let length = length / 4;
         let address = decoder.read_u16()?;

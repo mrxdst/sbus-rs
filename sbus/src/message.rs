@@ -46,7 +46,7 @@ impl Decodable<Self> for Message {
         let bytes = decoder.read_bytes(
             byte_length
                 .checked_sub(6)
-                .ok_or_else(|| DecodeError::InvalidData("Invalid byte length".into()))? as usize,
+                .ok_or(DecodeError::InvalidData("Invalid byte length"))? as usize,
         )?;
 
         let checksum = decoder.read_u16()?;
@@ -55,7 +55,7 @@ impl Decodable<Self> for Message {
         to_check.write_bytes(&bytes);
 
         if crc16(&to_check.finish()) != checksum {
-            return Err(DecodeError::InvalidData("Checksum mismatch".into()));
+            return Err(DecodeError::InvalidData("Checksum mismatch"));
         }
 
         let mut post_decoder = Decoder::new(&bytes);

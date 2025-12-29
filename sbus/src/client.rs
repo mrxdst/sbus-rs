@@ -24,9 +24,11 @@ pub enum SBusError {
     /// Some arguments provided to the function are out of range.
     /// Commonly the combination of address + length is outside the allowed range.
     /// The request was never sent to the server.
-    ArgumentsOutOfRange(String),
+    ArgumentsOutOfRange(&'static str),
+    /// Internal error.
+    Internal(&'static str),
     /// Indicates that the response received from the server is not a valid response.
-    InvalidResponse(String),
+    InvalidResponse(&'static str),
 }
 
 impl Display for SBusError {
@@ -34,6 +36,7 @@ impl Display for SBusError {
         match self {
             SBusError::IO(err) => write!(f, "{err}"),
             SBusError::ArgumentsOutOfRange(err) => write!(f, "Argument out of range: {err}"),
+            SBusError::Internal(err) => write!(f, "Internal error: {err}"),
             SBusError::InvalidResponse(err) => write!(f, "Invalid response: {err}"),
         }
     }
@@ -50,7 +53,7 @@ impl From<tokio::io::Error> for SBusError {
 impl From<DecodeError> for SBusError {
     fn from(value: DecodeError) -> Self {
         match value {
-            DecodeError::MissingData => Self::InvalidResponse("The server sent invalid data".into()),
+            DecodeError::MissingData => Self::InvalidResponse("The server sent invalid data"),
             DecodeError::InvalidData(text) => Self::InvalidResponse(text),
         }
     }
@@ -59,7 +62,7 @@ impl From<DecodeError> for SBusError {
 impl From<EncodeError> for SBusError {
     fn from(value: EncodeError) -> Self {
         match value {
-            EncodeError::Overflow => Self::ArgumentsOutOfRange("Error encoding message".into()),
+            EncodeError::Overflow => Self::ArgumentsOutOfRange("Error encoding message"),
         }
     }
 }
@@ -336,13 +339,14 @@ impl SBusUDPClient {
 
         self.socket.send(&req_bytes).await?;
 
-        let res_msg = match receiver.await.unwrap() {
-            Ok(msg) => msg,
-            Err(error) => return Err(error),
+        let res_msg = match receiver.await {
+            Ok(Ok(msg)) => msg,
+            Ok(Err(error)) => return Err(error),
+            Err(_err) => return Err(SBusError::Internal("Too many concurrent requests")),
         };
 
         if res_msg.telegram_attribute != response_type {
-            return Err(SBusError::InvalidResponse("Telegram attribute mismatch".to_string()));
+            return Err(SBusError::InvalidResponse("Telegram attribute mismatch"));
         }
 
         Ok(res_msg.body)
@@ -369,7 +373,7 @@ impl SBusUDPClient {
 
             let sender = response_map.lock().await.remove(&msg.sequence_number);
             match sender {
-                None => return Err(SBusError::InvalidResponse("The server sent an unexpected response".into())),
+                None => return Err(SBusError::InvalidResponse("The server sent an unexpected response")),
                 Some(sender) => _ = sender.send(Ok(msg)),
             }
         }
@@ -384,10 +388,8 @@ impl Drop for SBusUDPClient {
 
 fn validate_input(address: u16, length: usize, max_length: u16) -> Result<(), SBusError> {
     if length == 0 || length > max_length as usize {
-        return Err(SBusError::ArgumentsOutOfRange(format!(
-            "Length exceeds maximum allowed length {max_length}"
-        )));
+        return Err(SBusError::ArgumentsOutOfRange("Length exceeds maximum allowed length"));
     }
-    u16::checked_add(address, (length - 1) as u16).ok_or(SBusError::ArgumentsOutOfRange("Address + length exceeds device address space".to_string()))?;
+    u16::checked_add(address, (length - 1) as u16).ok_or(SBusError::ArgumentsOutOfRange("Address + length exceeds device address space"))?;
     Ok(())
 }

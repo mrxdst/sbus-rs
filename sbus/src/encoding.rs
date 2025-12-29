@@ -108,7 +108,7 @@ impl Encoder {
 #[derive(PartialEq, Debug)]
 pub enum DecodeError {
     MissingData,
-    InvalidData(String),
+    InvalidData(&'static str),
 }
 
 pub type DecodeResult<T> = Result<T, DecodeError>;

@@ -24,12 +24,12 @@ impl<'a> Decodable<Self> for WriteFlagsRequest<'a> {
         let byte_length = decoder
             .read_u8()?
             .checked_sub(2)
-            .ok_or_else(|| DecodeError::InvalidData("Invalid byte length".into()))?;
+            .ok_or(DecodeError::InvalidData("Invalid byte length"))?;
         let address = decoder.read_u16()?;
         let length = decoder
             .read_u8()?
             .checked_add(1)
-            .ok_or_else(|| DecodeError::InvalidData("Invalid length".into()))?;
+            .ok_or(DecodeError::InvalidData("Invalid length"))?;
         let mut values = decoder.read_bools(byte_length as usize)?;
         values.truncate(length as usize);
 

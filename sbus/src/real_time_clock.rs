@@ -35,7 +35,7 @@ impl Decodable<Self> for RealTimeClock {
         let mut read = || -> DecodeResult<u8> {
             let v: u8 = format!("{:X}", decoder.read_u8()?)
                 .parse()
-                .map_err(|_| DecodeError::InvalidData("Invalid time data".into()))?;
+                .map_err(|_| DecodeError::InvalidData("Invalid time data"))?;
             Ok(v)
         };
         Ok(Self {
