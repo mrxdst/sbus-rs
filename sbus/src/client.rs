@@ -1,13 +1,12 @@
 use std::{
     collections::HashMap,
-    error::Error,
-    fmt::Display,
     sync::{
         atomic::{AtomicU16, Ordering},
         Arc,
     },
 };
 
+use thiserror::Error;
 use tokio::{
     net::UdpSocket,
     sync::{oneshot, Mutex},
@@ -17,32 +16,26 @@ use tokio::{
 use crate::{acknowledge::Acknowledge, command_id::CommandId, commands::*, consts::*, encoding::*, message::*, request::Request, RealTimeClock};
 
 /// Errors returned by the [`SBusUDPClient`].
-#[derive(Debug, Clone)]
+#[derive(Error, Debug, Clone)]
 pub enum SBusError {
     /// Represent an IO error.
+    #[error(transparent)]
     IO(Arc<tokio::io::Error>),
+
     /// Some arguments provided to the function are out of range.
     /// Commonly the combination of address + length is outside the allowed range.
     /// The request was never sent to the server.
+    #[error("Argument out of range: {0}")]
     ArgumentsOutOfRange(&'static str),
+
     /// Internal error.
+    #[error("Internal error: {0}")]
     Internal(&'static str),
+
     /// Indicates that the response received from the server is not a valid response.
+    #[error("Invalid response: {0}")]
     InvalidResponse(&'static str),
 }
-
-impl Display for SBusError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            SBusError::IO(err) => write!(f, "{err}"),
-            SBusError::ArgumentsOutOfRange(err) => write!(f, "Argument out of range: {err}"),
-            SBusError::Internal(err) => write!(f, "Internal error: {err}"),
-            SBusError::InvalidResponse(err) => write!(f, "Invalid response: {err}"),
-        }
-    }
-}
-
-impl Error for SBusError {}
 
 impl From<tokio::io::Error> for SBusError {
     fn from(value: tokio::io::Error) -> Self {

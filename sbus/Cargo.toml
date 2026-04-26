@@ -8,3 +8,4 @@ license = "MIT"
 tokio = { version = "1.42.0", features = ["full"] }
 bytes = "1.9.0"
 num_enum = "0.7.3"
+thiserror = "2.0.18"

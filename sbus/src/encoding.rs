@@ -1,11 +1,13 @@
 use bytes::Buf;
+use thiserror::Error;
 use std::{
     io::{Cursor, Read},
     num::TryFromIntError,
 };
 
-#[derive(PartialEq, Debug)]
+#[derive(Error, PartialEq, Debug)]
 pub enum EncodeError {
+    #[error("Overflow")]
     Overflow,
 }
 
@@ -105,9 +107,11 @@ impl Encoder {
     }
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(Error, PartialEq, Debug)]
 pub enum DecodeError {
+    #[error("Missing data")]
     MissingData,
+    #[error("{0}")]
     InvalidData(&'static str),
 }
 

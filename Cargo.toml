@@ -3,4 +3,4 @@ members = [
     "sbus",
     "sbus-test",
 ]
-resolver = "2"
+resolver = "3"

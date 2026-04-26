@@ -445,10 +445,10 @@ impl ClientImpl {
             _ = client_.lock().await.take();
             println!();
             println!();
-            match result {
-                Ok(_) => println!("Socket closed"),
-                Err(err) => println!("{err}"),
+            if let Err(err) = result {
+                println!("{err}")
             }
+            println!("Socket closed");
             println!();
         });
 
